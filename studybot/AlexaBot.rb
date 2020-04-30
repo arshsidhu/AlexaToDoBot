@@ -1,4 +1,5 @@
 require 'base64'
+require 'bson'
 require 'date'
 require 'discordrb'
 require 'json'
@@ -18,6 +19,9 @@ Mongo::Logger.logger.level = Logger::FATAL
 
 # Connecting to db
 client = Mongo::Client.new("mongodb+srv://#{env["DBUSER"]}:#{env["DBPASS"]}@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority", :database => "ToDo")
+
+# ObjectId generator for mongodb
+generator = BSON::ObjectId::Generator.new
 
 # Globals
 TASKS = client[:Tasks]
@@ -65,7 +69,7 @@ bot.command(:addtask, description: "Add a task to your ToDo list.") do |event, t
     num = TASKS.find({'user':user}).count
     id = TASKS.find.count
     
-    doc['_id'] = id+1
+    doc['_id'] = BSON::ObjectId.new
     doc['num'] = num+1
     doc['user'] = user
     doc['tag'] = tag
@@ -105,6 +109,25 @@ bot.command(:display, description: "Display your tasks.") do |event, tag = "All"
     return output_str
 end
 
+# Mark task as finsihed and delete from database
+# Params
+# num - task number
+bot.command(:complete, description: "Mark tasks as complete by number.") do |event, num|
+
+    doc = TASKS.find({'user':event.user.name, 'num':num.to_i}).limit(1).first
+    
+    unless doc.nil?
+        TASKS.delete_one(doc)
+        TASKS.update_many({'num': {'$gt': num.to_i}}, {'$inc': {'num':-1}})
+        return "Congrats, task complete!"
+    else
+        return "Task num not found"
+    end
+end
+
+# Method to change a TASK json to a str
+# Params
+# task = Task json
 def task_to_s(task)
     return "num:#{task['num']}\ntag:#{task['tag']}\ndue date:#{task['date'].to_s}\ndescription:#{task['description']}\n"
 end
