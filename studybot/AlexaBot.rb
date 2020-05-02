@@ -5,6 +5,7 @@ require 'discordrb'
 require 'json'
 require 'mongo'
 require 'table_print'
+require 'rufus-scheduler'
 
 # Managing jsons
 envfile = File.open "environment.json"
@@ -20,12 +21,10 @@ Mongo::Logger.logger.level = Logger::FATAL
 # Connecting to db
 client = Mongo::Client.new("mongodb+srv://#{env["DBUSER"]}:#{env["DBPASS"]}@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority", :database => "ToDo")
 
-# ObjectId generator for mongodb
-generator = BSON::ObjectId::Generator.new
-
 # Globals
 TASKS = client[:Tasks]
 TAGS = ["School", "Work", "Misc", "All"]
+scheduler = Rufus::Scheduler.new
 
 bot = Discordrb::Commands::CommandBot.new token: env["TOKEN"], client_id: env['CLIENTID'], prefix: '!'
 
@@ -34,7 +33,7 @@ bot.message(with_text: "Ping!") do |event|
 end
 
 bot.command(:test, description: "Used to debug.") do |event|
-    TASKS.find().each do |doc|
+    TASKS.find.each do |doc|
         event.respond JSON.pretty_generate(doc)
     end
     return
@@ -91,16 +90,25 @@ bot.command(:display, description: "Display your tasks.") do |event, tag = "All"
         return
     end
 
+    output = generate_todo(tag, event.user.name)
+    return output
+    
+end
+
+# Generate a string to represent your ToDo list
+# Params 
+# Tag = task tag
+def generate_todo(tag, user)
     if tag == "All"
-        items = TASKS.find({'user':event.user.name})
+        items = TASKS.find({'user':user})
     else
-        items = TASKS.find({'user':event.user.name, 'tag':tag})    
+        items = TASKS.find({'user':user, 'tag':tag})    
     end
 
     # figure out how to properly print this later
     # tp items, :num, :tag, :date, :description
 
-    output_str = "```- - - - - - - - - - - - - - -\n"
+    output_str = "```TODO LIST\n- - - - - - - - - - - - - - -\n"
     items.each do |doc|
         output_str << task_to_s(doc) << "- - - - - - - - - - - - - - -\n"
     end
@@ -108,6 +116,7 @@ bot.command(:display, description: "Display your tasks.") do |event, tag = "All"
 
     return output_str
 end
+
 
 # Mark task as finsihed and delete from database
 # Params
@@ -127,10 +136,17 @@ end
 
 # Method to change a TASK json to a str
 # Params
-# task = Task json
+# task = task json
 def task_to_s(task)
     return "num:#{task['num']}\ntag:#{task['tag']}\ndue date:#{task['date'].to_s}\ndescription:#{task['description']}\n"
 end
 
+# CRON task to remind user of tasks
+# Set for 10AM every day
+scheduler.cron '00 10 * * *' do
+    # Make this generic later on
+    output = generate_todo("All", "Arsh")
+    bot.send_message(683790662885572851, output)
+end
 
 bot.run
