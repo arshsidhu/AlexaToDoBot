@@ -16,19 +16,6 @@
           "samples": []
         },
         {
-          "name": "HelloWorldIntent",
-          "slots": [],
-          "samples": [
-            "hello",
-            "how are you",
-            "say hi world",
-            "say hi",
-            "hi",
-            "say hello world",
-            "say hello"
-          ]
-        },
-        {
           "name": "AMAZON.NavigateHomeIntent",
           "samples": []
         },
@@ -39,10 +26,108 @@
             "hear current tasks",
             "show tasks"
           ]
+        },
+        {
+          "name": "CaptureAddTaskIntent",
+          "slots": [],
+          "samples": [
+            "add to list",
+            "task",
+            "add task",
+            "add a task"
+          ]
+        },
+        {
+          "name": "GetTaskInformationIntent",
+          "slots": [
+            {
+              "name": "description",
+              "type": "Description"
+            },
+            {
+              "name": "tag",
+              "type": "Tag"
+            },
+            {
+              "name": "month",
+              "type": "AMAZON.Month"
+            },
+            {
+              "name": "day",
+              "type": "AMAZON.Ordinal"
+            },
+            {
+              "name": "year",
+              "type": "AMAZON.FOUR_DIGIT_NUMBER"
+            }
+          ],
+          "samples": [
+            "{description} due {month} {year}",
+            "{tag} {description} due {month} {day} {year}",
+            "{description} due {month} {day}",
+            "{description} {tag}",
+            "{description} {tag} due {month} {day} {year}"
+          ]
         }
       ],
-      "types": []
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "misc"
+              }
+            },
+            {
+              "name": {
+                "value": "work"
+              }
+            },
+            {
+              "name": {
+                "value": "school"
+              }
+            }
+          ],
+          "name": "Tag"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "scrum task fix bug"
+              }
+            },
+            {
+              "name": {
+                "value": "jira ticket one one two three four front end bug"
+              }
+            },
+            {
+              "name": {
+                "value": "dentist appointment"
+              }
+            },
+            {
+              "name": {
+                "value": "assignment two for comp three forty"
+              }
+            },
+            {
+              "name": {
+                "value": "project for comp three thrity"
+              }
+            },
+            {
+              "name": {
+                "value": "Assignment one for comp four eleven"
+              }
+            }
+          ],
+          "name": "Description"
+        }
+      ]
     }
   },
-  "version": "2"
+  "version": "4"
 }
