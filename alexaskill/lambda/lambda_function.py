@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
-
-# This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK for Python.
-# Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
-# session persistence, api calls, and more.
-# This sample is built using the handler classes approach in skill builder.
 import logging
 import ask_sdk_core.utils as ask_utils
+import datetime
+import pymongo
+import bson
+import calendar
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
+from pymongo import MongoClient
+from time import strptime
 
 from ask_sdk_model import Response
 
@@ -68,20 +68,64 @@ class CaptureAddTaskIntentHandler(AbstractRequestHandler):
         )
         
 class GetTaskInformationHandler(AbstractRequestHandler):
+    
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("GetTaskInformationIntent")(handler_input)
         
     def handle(self, handler_input):
         
+        client = pymongo.MongoClient("mongodb+srv://<DBUSERNAME>:<DBPASSWORD>@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        db = client["ToDo"]
+        tasks = db['Tasks']
+        
         slots = handler_input.request_envelope.request.intent.slots
         desc = slots["description"].value
         tag = slots["tag"].value
         year = slots["year"].value
         month = slots["month"].value
+        month_num = 0
         day = slots["day"].value
         
-        speak_output = "Ok great! {t} task added, {d}, due on {m} {da} {y}.".format(t = tag, d = desc, m = month, da = day, y = year)
+        # -------------Generate Json-----------------
+        now = datetime.datetime.now()
+        
+        # if tag isnt specified, set to misc
+        if tag == None:
+            tag = "Misc"
+            
+        # if date isnt specified, set to current date
+        if year == None:
+            year = now.year
+            
+        if month == None:
+            month_num = now.month
+            month = calendar.month_name[int(mon)]
+        else:
+            mon = month[0:3]
+            month_num = strptime(mon, '%b').tm_mon
+            
+        if day == None:
+            day = now.day
+        
+        date_str = str(day) + "/" + str(month_num) + "/" + str(year)
+        date = datetime.datetime.strptime(date_str, "%d/%M/%Y")
+        num = tasks.find({'user':'Arsh'}).count()
+        
+        json = {
+            '_id': bson.objectid.ObjectId(),
+            'num': num + 1,
+            'user':'Arsh',
+            'tag':tag.capitalize(),
+            'date':date,
+            'description':desc
+        }
+        
+        # ----------------------------------------
+        
+        tasks.insert_one(json)
+        
+        speak_output = "Ok great! {t} task added, {d}, due on {m} {da} {y}.".format(t = tag, d = desc, m = month, da = day, y = year, n = num)
         
         return (
             handler_input.response_builder
@@ -89,7 +133,8 @@ class GetTaskInformationHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )
-
+        
+        
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
     def can_handle(self, handler_input):
