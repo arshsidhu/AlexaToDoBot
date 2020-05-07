@@ -36,6 +36,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 .response
         )
 
+
 class CaptureListIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -50,6 +51,7 @@ class CaptureListIntentHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )
+
 
 class ListAllTasksIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -68,10 +70,11 @@ class ListAllTasksIntentHandler(AbstractRequestHandler):
         
         if (amt > 0):
             for document in tasks.find({'user':'Arsh'}):
+                num = document['num']
                 tag = document['tag']
                 desc = document['description']
                 date = str(document['date']).split(" ")[0]
-                speak_output += "" + tag + " task, " + desc + ", due on " + date + ".\n"
+                speak_output += "Task number " + str(num) + ", " + tag + " task, " + desc + ", due on " + date + ".\n"
         else:
             speak_output = "Sorry, no tasks were found in your todo list."
         
@@ -81,6 +84,7 @@ class ListAllTasksIntentHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )
+        
         
 class ListTaskByNumIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -105,7 +109,7 @@ class ListTaskByNumIntentHandler(AbstractRequestHandler):
                 tag = document['tag']
                 desc = document['description']
                 date = str(document['date']).split(" ")[0]
-                speak_output += "" + tag + " task, " + desc + ", due on " + date + ".\n"
+                speak_output += "Task number " + str(num) + ", " + tag + " task, " + desc + ", due on " + date + ".\n"
         else:
             speak_output = "Sorry, task number {n} not found.".format(n = num)
         
@@ -115,6 +119,7 @@ class ListTaskByNumIntentHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )        
+        
         
 class ListTaskByTagIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -136,9 +141,10 @@ class ListTaskByTagIntentHandler(AbstractRequestHandler):
         
         if (amt > 0):
             for document in tasks.find({'user':'Arsh','tag':tag}):
+                num = document['num']
                 desc = document['description']
                 date = str(document['date']).split(" ")[0]
-                speak_output += "" + tag + " task, " + desc + ", due on " + date + ".\n"
+                speak_output += "Task number " + str(num) + ", " + tag + " task, " + desc + ", due on " + date + ".\n"
         else:
             speak_output = "Sorry, no {t} tasks were found.".format(t = tag)
             
@@ -148,7 +154,8 @@ class ListTaskByTagIntentHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )  
-        
+ 
+       
 class CaptureAddTaskIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -163,6 +170,7 @@ class CaptureAddTaskIntentHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )
+
         
 class GetTaskInformationHandler(AbstractRequestHandler):
     
@@ -230,6 +238,7 @@ class GetTaskInformationHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )
+
         
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
