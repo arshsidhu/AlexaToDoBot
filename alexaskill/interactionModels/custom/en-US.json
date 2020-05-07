@@ -68,6 +68,48 @@
             "{description} {tag}",
             "{description} {tag} due {month} {day} {year}"
           ]
+        },
+        {
+          "name": "ListAllTasksIntent",
+          "slots": [],
+          "samples": [
+            "current tasks",
+            "all of the current tasks",
+            "all of my current tasks",
+            "all of my tasks",
+            "all tasks",
+            "all"
+          ]
+        },
+        {
+          "name": "ListTaskByNumIntent",
+          "slots": [
+            {
+              "name": "number",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "task number {number}",
+            "task {number}",
+            "number {number}",
+            "{number}"
+          ]
+        },
+        {
+          "name": "ListTaskByTagIntent",
+          "slots": [
+            {
+              "name": "tag",
+              "type": "Tag"
+            }
+          ],
+          "samples": [
+            "list {tag} tasks",
+            "list {tag}",
+            "{tag} tasks",
+            "{tag}"
+          ]
         }
       ],
       "types": [
@@ -129,5 +171,5 @@
       ]
     }
   },
-  "version": "4"
+  "version": "7"
 }

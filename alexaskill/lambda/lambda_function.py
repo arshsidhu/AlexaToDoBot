@@ -42,15 +42,112 @@ class CaptureListIntentHandler(AbstractRequestHandler):
         return ask_utils.is_intent_name("CaptureListIntent")(handler_input)
     
     def handle(self, handler_input):
-        speak_output = "Bet!"
+        speak_output = "Please specify a task number - or specify a tag - or would you like me to read all of the current tasks?"
         
         return (
             handler_input.response_builder
                 .speak(speak_output)
-                # .ask("add a reprompt if you want to keep the session open for the user to respond")
+                .ask(speak_output)
+                .response
+        )
+
+class ListAllTasksIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("ListAllTasksIntent")(handler_input)
+        
+    def handle(self, handler_input):
+        
+        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        db = client["ToDo"]
+        tasks = db['Tasks']
+        
+        speak_output = ""
+        
+        amt = tasks.find({'user':'Arsh'}).count()
+        
+        if (amt > 0):
+            for document in tasks.find({'user':'Arsh'}):
+                tag = document['tag']
+                desc = document['description']
+                date = str(document['date']).split(" ")[0]
+                speak_output += "" + tag + " task, " + desc + ", due on " + date + ".\n"
+        else:
+            speak_output = "Sorry, no tasks were found in your todo list."
+        
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
                 .response
         )
         
+class ListTaskByNumIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("ListTaskByNumIntent")(handler_input)
+        
+    def handle(self, handler_input):
+        
+        slots = handler_input.request_envelope.request.intent.slots
+        num = slots["number"].value
+        
+        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        db = client["ToDo"]
+        tasks = db['Tasks']
+        
+        speak_output = ""
+        
+        amt = tasks.find({'user':'Arsh','num':int(num)}).count()
+        
+        if (amt > 0):
+            for document in tasks.find({'user':'Arsh','num':int(num)}):
+                tag = document['tag']
+                desc = document['description']
+                date = str(document['date']).split(" ")[0]
+                speak_output += "" + tag + " task, " + desc + ", due on " + date + ".\n"
+        else:
+            speak_output = "Sorry, task number {n} not found.".format(n = num)
+        
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+                .response
+        )        
+        
+class ListTaskByTagIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("ListTaskByTagIntent")(handler_input)
+        
+    def handle(self, handler_input):
+        
+        slots = handler_input.request_envelope.request.intent.slots
+        tag = slots["tag"].value.capitalize()
+        
+        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        db = client["ToDo"]
+        tasks = db['Tasks']
+        
+        speak_output = ""
+        
+        amt = tasks.find({'user':'Arsh','tag':tag}).count()
+        
+        if (amt > 0):
+            for document in tasks.find({'user':'Arsh','tag':tag}):
+                desc = document['description']
+                date = str(document['date']).split(" ")[0]
+                speak_output += "" + tag + " task, " + desc + ", due on " + date + ".\n"
+        else:
+            speak_output = "Sorry, no {t} tasks were found.".format(t = tag)
+            
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+                .response
+        )  
         
 class CaptureAddTaskIntentHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
@@ -75,7 +172,7 @@ class GetTaskInformationHandler(AbstractRequestHandler):
         
     def handle(self, handler_input):
         
-        client = pymongo.MongoClient("mongodb+srv://<DBUSERNAME>:<DBPASSWORD>@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
         db = client["ToDo"]
         tasks = db['Tasks']
         
@@ -133,7 +230,6 @@ class GetTaskInformationHandler(AbstractRequestHandler):
                 .ask(speak_output)
                 .response
         )
-        
         
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
@@ -239,6 +335,9 @@ sb = SkillBuilder()
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(CaptureListIntentHandler())
+sb.add_request_handler(ListAllTasksIntentHandler())
+sb.add_request_handler(ListTaskByNumIntentHandler())
+sb.add_request_handler(ListTaskByTagIntentHandler())
 sb.add_request_handler(CaptureAddTaskIntentHandler())
 sb.add_request_handler(GetTaskInformationHandler())
 sb.add_request_handler(HelpIntentHandler())
