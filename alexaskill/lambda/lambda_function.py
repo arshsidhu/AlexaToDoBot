@@ -60,7 +60,7 @@ class ListAllTasksIntentHandler(AbstractRequestHandler):
         
     def handle(self, handler_input):
         
-        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        client = pymongo.MongoClient("mongodb+srv://<DBUSER>:<DBPASS>@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
         db = client["ToDo"]
         tasks = db['Tasks']
         
@@ -96,7 +96,7 @@ class ListTaskByNumIntentHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         num = slots["number"].value
         
-        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        client = pymongo.MongoClient("mongodb+srv://<DBUSER>:<DBPASS>@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
         db = client["ToDo"]
         tasks = db['Tasks']
         
@@ -131,7 +131,7 @@ class ListTaskByTagIntentHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         tag = slots["tag"].value.capitalize()
         
-        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        client = pymongo.MongoClient("mongodb+srv://<DBUSER>:<DBPASS>@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
         db = client["ToDo"]
         tasks = db['Tasks']
         
@@ -180,7 +180,7 @@ class GetTaskInformationHandler(AbstractRequestHandler):
         
     def handle(self, handler_input):
         
-        client = pymongo.MongoClient("mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
+        client = pymongo.MongoClient("mongodb+srv://<DBUSER>:<DBPASS>@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority")
         db = client["ToDo"]
         tasks = db['Tasks']
         
