@@ -14,6 +14,10 @@ class TasksController < ApplicationController
     def create
         @task = Task.new(task_params)
 
+        @task.num = Task.all.count + 1
+        @task.user = "Arsh"
+
+        puts @task
         if @task.save
             redirect_to @task
         else
@@ -37,6 +41,18 @@ class TasksController < ApplicationController
 
     def destroy
         @task = Task.find(params[:id])
+
+        Task.all.each do |task|
+            puts task.num
+            if task.num > @task.num
+                task.update(num: task.num - 1)
+            end
+        end
+
+        # Task.where(["num > ?", @task.num]).each do |task|
+        #     task.update(num: task.num - 1)
+        # end
+
         @task.destroy
 
         redirect_to tasks_path

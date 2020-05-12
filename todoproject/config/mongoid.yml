@@ -5,7 +5,7 @@ development:
     default:
       # Defines the name of the default database that Mongoid can connect to.
       # (required).
-      uri: mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority/ToDo
+      uri: mongodb+srv://arshDB:arshDBpass@cluster0-hbjvs.mongodb.net/test?retryWrites=true&w=majority
       options:
         server_selection_timeout: 5
         # Note that all options listed below are Ruby driver client options (the mongo gem).
@@ -105,6 +105,7 @@ development:
 
   # Configure Mongoid specific options. (optional)
   options:
+    log_level: :warn
     # Includes the root model name in json serialization. (default: false)
     # include_root_in_json: false
 
@@ -136,7 +137,7 @@ development:
     # Set the Mongoid and Ruby driver log levels when not in a Rails
     # environment. The Mongoid logger will be set to the Rails logger
     # otherwise.(default: :info)
-    # log_level: :info
+    
 
     # Control whether `belongs_to` association is required. By default
     # `belongs_to` will trigger a validation error if the association

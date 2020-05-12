@@ -1,6 +1,5 @@
-<h1>Tasks</h1>
 
-<table>
+<!-- <table>
   <thead>
     <tr>
       <th>Num</th>
@@ -26,8 +25,74 @@
       </tr>
     <% end %>
   </tbody>
-</table>
+</table> -->
 
-<br>
+<section id="school" class="main">
+    <div class="spotlight">
+        <div class="content">
+            <header class="major">
+                <h2>School Tasks</h2>
+            </header>
+            <table>
+                <tbody>
+                    <% @tasks.each do |task| %>
+                    <tr>
+                        <td><%= task.description %></td>
+                        <td><%= task.date %></td>
+                        <td><%= link_to 'Show', task %></td>
+                        <td><%= link_to 'Edit', edit_task_path(task) %></td>
+                        <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+                    </tr>
+                    <% end %>
+                </tbody>
+            <table>
+        </div>
+    </div>
+</section>
 
-<%= link_to 'New Task', new_task_path %>
+<section id="work" class="main">
+    <div class="spotlight">
+        <div class="content">
+            <header class="major">
+                <h2>Work Tasks</h2>
+            </header>
+            <table>
+                <tbody>
+                    <% @tasks.each do |task| %>
+                    <tr>
+                        <td><%= task.description %></td>
+                        <td><%= task.date %></td>
+                        <td><%= link_to 'Show', task %></td>
+                        <td><%= link_to 'Edit', edit_task_path(task) %></td>
+                        <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+                    </tr>
+                    <% end %>
+                </tbody>
+            <table>
+        </div>
+    </div>
+</section>
+
+<section id="misc" class="main">
+    <div class="spotlight">
+        <div class="content">
+            <header class="major">
+                <h2>Miscellaneous Tasks</h2>
+            </header>
+            <table>
+                <tbody>
+                    <% @tasks.each do |task| %>
+                    <tr>
+                        <td><%= task.description %></td>
+                        <td><%= task.date %></td>
+                        <td><%= link_to 'Show', task %></td>
+                        <td><%= link_to 'Edit', edit_task_path(task) %></td>
+                        <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+                    </tr>
+                    <% end %>
+                </tbody>
+            <table>
+        </div>
+    </div>
+</section>
+<!--<%= link_to 'New Task', new_task_path %>-->
